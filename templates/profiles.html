@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            background-image: url('/media/background.jpg');
+            background-repeat: no-repeat;
+            background-size:cover;
+        }
+        input {
+            padding: 8px;
+            border-radius: 10px;
+            border-color: slateblue
+        }
+        #searchBtn {
+            color: #fff;
+            background-color: slateblue;
+        }
+        .button {
+            display: block;
+            width: 150px;
+            height: 50px;
+            background: slateblue;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            line-height: 25px;
+            position: relative;
+            margin: 0 auto;
+            text-decoration: none;
+        }
+        .button:hover {
+            color: #fff;
+        }
+        .center {
+            text-align: center;
+        }
+        .table {
+            position: relative;
+            width: 80% !important;
+            border: 1px solid #0f0f0f;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        .table th {
+            font-weight: bold;
+            padding: 5px;
+            background: #f9ebff;
+            border: none;
+            border-bottom: 5px solid #f9ebff;
+        }
+        .table td {
+            padding: 5px;
+            border: none;
+            border-bottom: 5px solid #f9ebff;
+        }
+
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <title>Resume Uploader</title>
+</head>
+
+<body>
+    <br>
+    <h1 class="text-center mb-3" style="color:slateblue;"><i><b>List of Candidates</b></i></h1>
+
+<hr>
+<div class="center">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+            <form action="{% url 'home' %}" method="POST">
+                {% csrf_token %}
+                <input type="text" name="first_name" placeholder="Search by first name"/>
+                <input type="text" name="last_name" placeholder="Search by last name"/>
+                <input type="text" name="keywords" placeholder="Search by keywords"/>
+                <input type="submit" name="submit" id="searchBtn" value="Search"/>
+            </form>
+        </li>
+    </ul>
+</div>
+<hr>
+
+{% if resumes|length > 0 %}
+    <table class="table">
+        <tr>
+            <th><b>First name</b></th>
+            <th><b>Last name</b></th>
+            <th><b>Keywords</b></th>
+            <th><b>Resume</b></th>
+        </tr>
+        {% for resume in resumes %}
+            <tr>
+                <td>{{resume.first_name}}</td>
+                <td>{{resume.last_name}}</td>
+                <td>{{resume.keywords}}</td>
+                <td><a href="{{resume.resume_file.url}}" download>Download file: {{ resume.resume_file.name }}</a></td>
+            </tr>
+        {% endfor %}
+{% else %}
+    <h4 class="text-center mb-3" style="color:slateblue;">No results were found !</h4>
+{% endif %}
+</table>
+
+<div>
+    <a href="{% url 'create_profile' %}" class="button">Create profile</a>
+</div>
+
+<div style="position: relative">
+{% if messages %}
+    {% for message in messages %}
+        <div style="position: absolute; bottom: 50px;" class="alert alert-{{ message.tags }} alert-dismissible text-center" role="alert">
+            <strong>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error{% else %}{{ message.tags|title }}{% endif %}!
+            </strong> {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+</div>
+
+</body>
+</html>
